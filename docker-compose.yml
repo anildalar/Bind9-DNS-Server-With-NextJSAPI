@@ -1,0 +1,15 @@
+
+services:
+  bind9:
+    build: .
+    container_name: bind9-container
+    environment:
+      - TZ=UTC
+    ports:
+      - "30053:53"
+      - "30053:53/udp"
+      - "3000:3000"
+    restart: always
+    volumes:
+      - ./bind:/etc/bind
+      - ./webapp:/app
