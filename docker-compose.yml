@@ -11,5 +11,45 @@ services:
       - "3000:3000"
     restart: always
     volumes:
-      - ./bind:/etc/bind
-      - ./webapp:/app
+      - ./docker_config/bind:/etc/bind
+      - .:/app
+    networks:
+      - bind9-network
+
+  # MySQL Service
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    env_file:
+      - .env
+    volumes:
+      - ./docker_config/mysql-data:/var/lib/mysql
+    depends_on:
+      - bind9
+      
+    restart: always
+    networks:
+      - bind9-network
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-container
+    env_file:
+      - .env
+    environment:
+      - PMA_HOST=${MYSQL_HOST}
+      - PMA_USER=${MYSQL_USER} # Same user as in the MySQL setup
+      - PMA_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3001:80" # Access phpMyAdmin on http://localhost:3000
+    depends_on:
+      - mysql
+    restart: always
+    networks:
+      - bind9-network
+
+# Docker Networks
+networks:
+  bind9-network:
+    driver: bridge

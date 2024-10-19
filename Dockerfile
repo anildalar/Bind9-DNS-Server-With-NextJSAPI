@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install Node.js (for running Next.js) and other dependencies
 RUN apt-get update && \
-    apt-get install -y curl && \
+    apt-get install -y apt-utils curl && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     npm install pm2 -g && \
@@ -14,11 +14,11 @@ RUN apt-get update && \
 
 # Copy Next.js package files and install dependencies
 # COPY SRC DST
-COPY webapp/package*.json ./
+COPY package*.json ./
 RUN npm install
 
 # Copy Next.js app source code
-COPY ./webapp .
+COPY . .
 
 # Build the Next.js app
 RUN npm run build
